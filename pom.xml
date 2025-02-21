@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>me.lhy</groupId>
-    <artifactId>PandaID</artifactId>
+    <artifactId>PandaAPP</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>PandaID</name>
     <description>PandaID</description>
