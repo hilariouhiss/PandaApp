@@ -1,13 +1,15 @@
-package me.lhy.pandaid.po;
+package me.lhy.pandaid.domain.po;
 
 
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @TableName("pandas")
 public class Panda {
 
@@ -38,4 +40,18 @@ public class Panda {
     @Schema(description="是否删除")
     @TableLogic
     private Boolean deleted;
+
+    @Override
+    public String toString() {
+        return "Panda{" +
+                "pandaId=" + pandaId +
+                ", pandaName='" + pandaName + '\'' +
+                ", pandaAge=" + pandaAge +
+                ", pandaSex='" + pandaSex + '\'' +
+                ", pandaInfo='" + pandaInfo + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deleted=" + deleted +
+                '}';
+    }
 }

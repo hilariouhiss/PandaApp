@@ -1,4 +1,4 @@
-package me.lhy.pandaid.po;
+package me.lhy.pandaid.domain.po;
 
 
 import java.util.Date;
@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @TableName("users")
 public class User {
 
@@ -40,4 +42,18 @@ public class User {
     @Schema(description="是否删除")
     @TableLogic
     private Boolean deleted;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", gender='" + gender + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deleted=" + deleted +
+                '}';
+    }
 }
