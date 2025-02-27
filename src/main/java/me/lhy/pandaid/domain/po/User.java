@@ -1,19 +1,17 @@
 package me.lhy.pandaid.domain.po;
 
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
-@TableName("users")
 public class User {
 
     @Schema(description="用户id")
@@ -29,7 +27,7 @@ public class User {
     private String phoneNumber;
 
     @Schema(description="用户性别（男/女）")
-    private String gender;
+    private Character gender;
 
     @Schema(description="创建时间")
     @TableField(fill = FieldFill.INSERT)

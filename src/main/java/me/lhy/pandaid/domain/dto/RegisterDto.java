@@ -10,12 +10,14 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class UserDto implements Serializable {
+public class RegisterDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     private String username;
+
+    private String password;
 
     private String phoneNumber;
 
@@ -23,15 +25,13 @@ public class UserDto implements Serializable {
 
     private Date createdAt;
 
-    private Date updatedAt;
-
     @Override
     public String toString() {
-        return "UserDto{" +
+        return "RegisterDto{" +
                 "username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", gender='" + gender + '\'' +
-                ", createdAt=" + createdAt +
                 '}';
     }
 }

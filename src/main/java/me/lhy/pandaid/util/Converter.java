@@ -1,6 +1,10 @@
 package me.lhy.pandaid.util;
 
+import me.lhy.pandaid.domain.dto.PandaDto;
+import me.lhy.pandaid.domain.dto.LoginDto;
+import me.lhy.pandaid.domain.dto.RegisterDto;
 import me.lhy.pandaid.domain.dto.UserDto;
+import me.lhy.pandaid.domain.po.Panda;
 import me.lhy.pandaid.domain.po.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -13,6 +17,14 @@ public interface Converter {
 
     UserDto toUserDto(User user);
 
-    User toUser(UserDto userDto);
+    User toUser(LoginDto dto);
+
+    User toUser(RegisterDto dto);
+
+    User toUser(UserDto dto);
+
+    Panda toPanda(PandaDto dto);
+
+    PandaDto toPandaDto(Panda panda);
 
 }

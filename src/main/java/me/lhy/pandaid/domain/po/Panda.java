@@ -1,16 +1,15 @@
 package me.lhy.pandaid.domain.po;
 
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
-@TableName("pandas")
 public class Panda {
 
     @Schema(description="熊猫编号")
@@ -24,7 +23,7 @@ public class Panda {
     private Integer pandaAge;
 
     @Schema(description="熊猫性别（雌/雄）")
-    private String pandaSex;
+    private Character pandaSex;
 
     @Schema(description="熊猫描述")
     private String pandaInfo;

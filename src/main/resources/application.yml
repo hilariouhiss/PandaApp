@@ -8,6 +8,31 @@ spring:
   cache:
     cache-names: pandaApp
     type: redis
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${mysql.addr}/pandaid?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true
+    username: ${mysql.username}
+    password: ${mysql.password}
+    # 数据库连接池配置
+    hikari:
+      minimum-idle: 5 # 最小连接数
+      maximum-pool-size: 10 # CPU核数*2 + 有效磁盘数
+      connection-timeout: 30000 # 连接超时时间
+      idle-timeout: 600000 # 连接空闲超时时间
+      max-lifetime: 1800000 # 连接最大存活时间
+      register-mbeans: true
+  data:
+    redis:
+      host: ${redis.addr}
+      port: ${redis.port}
+      database: ${redis.database}
+      timeout: 3000
+      lettuce:
+        pool:
+          enabled: true
+          max-idle: 8    # 最大空闲连接数
+          min-idle: 1    # 最小空闲连接数
+          max-active: 8  # 最大活跃连接数
 mybatis-plus:
   global-config:  # 全局设置
     banner: false  # 关闭banner

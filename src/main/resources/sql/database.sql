@@ -2,7 +2,7 @@ create database if not exists pandaApp charset utf8mb4 collate utf8mb4_general_c
 
 use pandaApp;
 
-create table if not exists users
+create table if not exists user
 (
     id           bigint       not null auto_increment comment '用户id',
     username     varchar(255) not null comment '用户名',
@@ -18,7 +18,7 @@ create table if not exists users
     check ( gender IN ('男', '女') )
 );
 
-create table if not exists pandas
+create table if not exists panda
 (
     panda_id   int         not null auto_increment comment '熊猫编号',
     panda_name varchar(50) not null comment '熊猫名',
