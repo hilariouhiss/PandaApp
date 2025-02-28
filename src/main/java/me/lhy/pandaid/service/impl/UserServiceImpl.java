@@ -9,12 +9,17 @@ import me.lhy.pandaid.domain.po.Role;
 import me.lhy.pandaid.domain.po.SecurityUser;
 import me.lhy.pandaid.domain.po.User;
 import me.lhy.pandaid.domain.po.UserRole;
+import me.lhy.pandaid.exception.BatchProcessException;
 import me.lhy.pandaid.exception.UserAlreadyExistsException;
+import me.lhy.pandaid.exception.UserNotFoundException;
 import me.lhy.pandaid.mapper.RoleMapper;
 import me.lhy.pandaid.mapper.UserMapper;
 import me.lhy.pandaid.mapper.UserRoleMapper;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Converter;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@CacheConfig(cacheNames = "userSystem")
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
@@ -46,8 +52,10 @@ public class UserServiceImpl implements UserService {
      * @return 用户信息
      * @throws UsernameNotFoundException 用户不存在
      */
+
     @LogOperation(value = "用户登录操作", maskFields = {"password"})
     @Override
+    @Cacheable(value = "user", key = "#username", unless = "#result == null")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var wrapper = new LambdaQueryWrapper<User>().eq(User::getUsername, username);
         User user = userMapper.selectOne(wrapper);
@@ -90,6 +98,7 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "用户注册操作", maskFields = {"password", "phoneNumber"})
     @Transactional(rollbackFor = Exception.class)
     @Override
+    @CacheEvict(value = {"user","userCount"}, allEntries = true)
     public void register(RegisterDto dto) {
         // 检查注册信息是否正确
         if (!validateUser(dto)) {
@@ -123,6 +132,8 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "获取所有用户信息")
     @Override
+    @Cacheable(value = "users", key = "T(java.util.Objects).hash(#pageNum,#pageSize)",
+            condition = "#pageNum < 5")
     public List<UserDto> getAllWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
         List<User> users = userMapper.selectPage(page, null).getRecords();
@@ -137,8 +148,12 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "获取所有用户信息")
     @Override
+    @Cacheable(value = "user", key = "#id")
     public UserDto getOneById(Long id) {
-        return Converter.INSTANCE.toUserDto(userMapper.selectById(id));
+        if (id == null) throw new IllegalArgumentException("id不能为空");
+        UserDto dto = Converter.INSTANCE.toUserDto(userMapper.selectById(id));
+        if (dto == null) throw new UserNotFoundException("用户不存在");
+        return dto;
     }
 
     /**
@@ -149,8 +164,12 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "获取所有用户信息")
     @Override
+    @Cacheable(value = "user", key = "#username")
     public UserDto getOneByUsername(String username) {
-        return Converter.INSTANCE.toUserDto(userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username)));
+        if (username == null) throw new IllegalArgumentException("username不能为空");
+        UserDto dto = Converter.INSTANCE.toUserDto(userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username)));
+        if (dto == null) throw new UserNotFoundException("用户不存在");
+        return dto;
     }
 
     /**
@@ -160,6 +179,7 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "获取用户总数")
     @Override
+    @Cacheable(value = "userCount")
     public Long getCount() {
         return userMapper.selectCount(null);
     }
@@ -171,6 +191,7 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "获取已删除的用户")
     @Override
+    @Cacheable(value = "deletedUsers", key = "#pageNum + '-' + #pageSize")
     public List<UserDto> getDeletedWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
         List<User> users = userMapper.selectPage(page, new LambdaQueryWrapper<User>().eq(User::getDeleted, true)).getRecords();
@@ -185,6 +206,7 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "批量添加用户")
     @Transactional
     @Override
+    @CacheEvict(value = {"users", "userCount", "deletedUsers"}, allEntries = true)
     public void addMany(List<UserDto> userDtos) {
         List<User> users = userDtos.stream().map(Converter.INSTANCE::toUser).toList();
         userMapper.insert(users);
@@ -198,6 +220,7 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "更新单个用户")
     @Transactional
     @Override
+    @CacheEvict(value = {"user","users"}, allEntries = true)
     public void updateOne(UserDto userDto) {
         userMapper.updateById(Converter.INSTANCE.toUser(userDto));
     }
@@ -210,8 +233,11 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "根据id删除用户")
     @Transactional
     @Override
+    @CacheEvict(value = {"user","users","userCount"}, allEntries = true)
     public void deleteOneById(Long id) {
-        userMapper.deleteById(id);
+        if (id == null) throw new IllegalArgumentException("id不能为空");
+        int deleted = userMapper.deleteById(id);
+        if (deleted == 0) throw new UserNotFoundException("用户不存在");
     }
 
     /**
@@ -222,8 +248,11 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "根据用户名删除用户")
     @Transactional
     @Override
+    @CacheEvict(value = {"user", "users", "userCount"}, allEntries = true)
     public void deleteOneByUsername(String username) {
-        userMapper.delete(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        if (username == null) throw new IllegalArgumentException("username不能为空");
+        int deleted = userMapper.delete(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        if (deleted == 0) throw new UserNotFoundException("用户不存在");
     }
 
     /**
@@ -234,7 +263,10 @@ public class UserServiceImpl implements UserService {
     @LogOperation(value = "批量删除用户")
     @Transactional
     @Override
+    @CacheEvict(value = {"user", "users", "userCount"}, allEntries = true)
     public void deleteMany(List<Long> ids) {
-        userMapper.deleteByIds(ids);
+        if (ids == null || ids.isEmpty()) throw new IllegalArgumentException("ids不能为空");
+        int deleted = userMapper.deleteByIds(ids);
+        if (deleted != ids.size()) throw new BatchProcessException("删除条数不符合预期");
     }
 }

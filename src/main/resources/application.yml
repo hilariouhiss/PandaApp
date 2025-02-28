@@ -6,8 +6,11 @@ spring:
   profiles:
     active: dev
   cache:
-    cache-names: pandaApp
     type: redis
+    redis:
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: "CACHE:"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${mysql.addr}/pandaid?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true

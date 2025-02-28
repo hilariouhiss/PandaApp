@@ -12,12 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * 自定义登陆失败处理器
- *
- * @author Lhy
- * @since 2023/11/02 11:58
- */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 

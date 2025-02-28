@@ -17,13 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * 自定义用户认证成功处理器
- *
- * @author Lhy
- * @since 2023/11/02 12:15
- */
-
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
