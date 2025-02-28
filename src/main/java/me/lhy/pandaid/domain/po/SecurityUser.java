@@ -9,11 +9,12 @@ import java.util.List;
 
 public class SecurityUser implements UserDetails {
 
-    private User user;
-    private List<Role> roles;
+    private final User user;
+    private final List<Role> roles;
 
     public SecurityUser(User user, List<Role> roles) {
-
+        this.user = user;
+        this.roles = roles;
     }
 
     @Override
