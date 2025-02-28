@@ -3,6 +3,7 @@ package me.lhy.pandaid.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.lhy.pandaid.util.AccountType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -25,13 +26,5 @@ public class RegisterDto implements Serializable {
 
     private Date createdAt;
 
-    @Override
-    public String toString() {
-        return "RegisterDto{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", gender='" + gender + '\'' +
-                '}';
-    }
+    private AccountType accountType = AccountType.USER;
 }

@@ -8,7 +8,6 @@ import me.lhy.pandaid.domain.po.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface Converter {
@@ -24,6 +23,4 @@ public interface Converter {
     Panda toPanda(PandaDto dto);
 
     PandaDto toPandaDto(Panda panda);
-
-    UserDetails toSecurityUser(User user);
 }

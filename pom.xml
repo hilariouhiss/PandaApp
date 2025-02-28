@@ -22,6 +22,10 @@
         <jjwt.version>0.12.6</jjwt.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!--mapstruct-->
         <dependency>
             <groupId>org.mapstruct</groupId>

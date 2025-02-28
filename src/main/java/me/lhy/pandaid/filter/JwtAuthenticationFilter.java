@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import me.lhy.pandaid.service.UserService;
-import me.lhy.pandaid.util.Jwt;
+import me.lhy.pandaid.util.JwtUtil;
 import me.lhy.pandaid.util.Result;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,8 +36,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwtToken = request.getHeader("Authorization");
         if (jwtToken != null && !jwtToken.isEmpty()) {
-            if (Jwt.validateToken(jwtToken)) {
-                Claims claims = Jwt.parseToken(jwtToken);
+            if (JwtUtil.validateToken(jwtToken)) {
+                Claims claims = JwtUtil.parseToken(jwtToken);
                 if (claims == null) {
                     filterChain.doFilter(request, response);
                     return;

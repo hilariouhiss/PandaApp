@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
 
     // 用户注册
-    Boolean register(RegisterDto dto);
+    void register(RegisterDto dto);
 
     // 查询
     // 查询所有用户

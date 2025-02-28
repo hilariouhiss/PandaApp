@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Log4j2
-public class Jwt {
+public class JwtUtil {
 
     // 访问过期时间
     private static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofHours(1);

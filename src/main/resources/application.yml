@@ -33,6 +33,13 @@ spring:
           max-idle: 8    # 最大空闲连接数
           min-idle: 1    # 最小空闲连接数
           max-active: 8  # 最大活跃连接数
+  # 异步线程池配置
+  task:
+    execution:
+      pool:
+        core-size: 4
+        max-size: 8
+        queue-capacity: 100
 mybatis-plus:
   global-config:  # 全局设置
     banner: false  # 关闭banner
@@ -60,3 +67,13 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+# 日志配置
+logging:
+  level:
+    root: info
+    me.lhy.pandaid.aspect.LogAspect: debug
+  file:
+    name: logs/app.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
