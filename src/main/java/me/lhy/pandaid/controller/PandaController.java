@@ -3,6 +3,7 @@ package me.lhy.pandaid.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import me.lhy.pandaid.domain.dto.PageDto;
 import me.lhy.pandaid.domain.dto.PandaDto;
 import me.lhy.pandaid.service.PandaService;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/panda")
 @Tag(name = "大熊猫管理", description = "大熊猫管理相关接口")
+@Slf4j
 public class PandaController {
 
     private final PandaService service;
@@ -67,8 +69,8 @@ public class PandaController {
 
     @Operation(summary = "获取已删除的大熊猫")
     @GetMapping("/getDeleted")
-    public Result<List<PandaDto>> getDeleted() {
-        var pandas = service.getDeleted();
+    public Result<List<PandaDto>> getDeleted(@RequestParam int pageNum,@RequestParam int pageSize) {
+        var pandas = service.getDeletedWithPage(pageNum, pageSize);
         return Result.success(pandas);
     }
 

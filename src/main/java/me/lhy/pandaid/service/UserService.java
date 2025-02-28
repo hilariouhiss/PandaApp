@@ -1,22 +1,19 @@
 package me.lhy.pandaid.service;
 
-import me.lhy.pandaid.domain.dto.LoginDto;
 import me.lhy.pandaid.domain.dto.RegisterDto;
 import me.lhy.pandaid.domain.dto.UserDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService {
-
-    // 用户登录
-    Boolean login(LoginDto dto);
+public interface UserService extends UserDetailsService {
 
     // 用户注册
     Boolean register(RegisterDto dto);
 
     // 查询
     // 查询所有用户
-    List<UserDto> getAll();
+    List<UserDto> getAllWithPage(int pageNum, int pageSize);
 
     // 根据ID查询单个用户
     UserDto getOneById(Long id);
@@ -28,12 +25,9 @@ public interface UserService {
     Long getCount();
 
     // 查询被删除的用户
-    List<UserDto> getDeleted();
+    List<UserDto> getDeletedWithPage(int pageNum, int pageSize);
 
     // 添加
-    // 添加单个用户
-    void addOne(UserDto userDto);
-
     // 添加多个用户
     void addMany(List<UserDto> userDtos);
 

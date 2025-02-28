@@ -2,11 +2,12 @@ package me.lhy.pandaid.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import me.lhy.pandaid.Constants;
+import lombok.extern.slf4j.Slf4j;
 import me.lhy.pandaid.domain.dto.PandaDto;
 import me.lhy.pandaid.domain.po.Panda;
 import me.lhy.pandaid.mapper.PandaMapper;
 import me.lhy.pandaid.service.PandaService;
+import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.Converter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service("pandaService")
+@Slf4j
 public class PandaServiceImpl implements PandaService {
 
     private final PandaMapper mapper;
@@ -32,6 +34,7 @@ public class PandaServiceImpl implements PandaService {
     public List<PandaDto> getAllWithPage(Integer pageNum, Integer pageSize) {
         Page<Panda> page = new Page<>(pageNum, pageSize);
         List<Panda> pandas = mapper.selectPage(page, null).getRecords();
+        log.info("第 {} 页，{} 只熊猫", pageNum, pandas.size());
         return pandas.stream().map(Converter.INSTANCE::toPandaDto).toList();
     }
 
@@ -44,6 +47,7 @@ public class PandaServiceImpl implements PandaService {
     @Override
     public PandaDto getOneById(Integer id) {
         Panda panda = mapper.selectById(id);
+        log.info("获取id为 {} 的大熊猫", id);
         return Converter.INSTANCE.toPandaDto(panda);
     }
 
@@ -55,6 +59,7 @@ public class PandaServiceImpl implements PandaService {
      */
     @Override
     public PandaDto getOneByName(String name) {
+        log.info("获取名字为 {} 的大熊猫", name);
         Panda panda = mapper.selectOne(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaName, name));
         return Converter.INSTANCE.toPandaDto(panda);
     }
@@ -67,11 +72,13 @@ public class PandaServiceImpl implements PandaService {
      */
     @Override
     public List<PandaDto> getAllByAge(Integer age) {
-        return mapper
+        List<PandaDto> list = mapper
                 .selectList(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaAge, age))
                 .stream()
                 .map(Converter.INSTANCE::toPandaDto)
                 .toList();
+        log.info("获取年龄为 {} 的大熊猫，共 {} 只", age, list.size());
+        return list;
     }
 
     /**
@@ -82,9 +89,11 @@ public class PandaServiceImpl implements PandaService {
      */
     @Override
     public List<PandaDto> getAllBySex(Character sex) {
-        return mapper.selectList(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaSex, sex))
-                     .stream().map(Converter.INSTANCE::toPandaDto)
-                     .toList();
+        List<PandaDto> list = mapper.selectList(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaSex, sex))
+                                    .stream().map(Converter.INSTANCE::toPandaDto)
+                                    .toList();
+        log.info("获取性别为 {} 的大熊猫，共 {} 只", sex,list.size());
+        return list;
     }
 
     /**
@@ -94,7 +103,9 @@ public class PandaServiceImpl implements PandaService {
      */
     @Override
     public Long getCount() {
-        return (mapper.selectCount(null));
+        Long count = mapper.selectCount(null);
+        log.info("获取熊猫总数为 {}",count);
+        return count;
     }
 
     /**
@@ -103,10 +114,12 @@ public class PandaServiceImpl implements PandaService {
      * @return 已删除的熊猫信息
      */
     @Override
-    public List<PandaDto> getDeleted() {
-        return mapper.selectList(new LambdaQueryWrapper<Panda>().eq(Panda::getDeleted, true))
-                     .stream().map(Converter.INSTANCE::toPandaDto)
-                     .toList();
+    public List<PandaDto> getDeletedWithPage(int pageNum, int pageSize) {
+        Page<Panda> page = new Page<>(pageNum, pageSize);
+        List<Panda> pandas = mapper.selectPage(page, new LambdaQueryWrapper<Panda>().eq(Panda::getDeleted, true))
+                                   .getRecords();
+        log.info("第 {} 页，{} 个已删除熊猫", pageNum, pandas.size());
+        return pandas.stream().map(Converter.INSTANCE::toPandaDto).toList();
     }
 
     /**
@@ -117,7 +130,9 @@ public class PandaServiceImpl implements PandaService {
     @Override
     @Transactional
     public void addOne(PandaDto pandaDto) {
-        mapper.insert(Converter.INSTANCE.toPanda(pandaDto));
+        Panda panda = Converter.INSTANCE.toPanda(pandaDto);
+        mapper.insert(panda);
+        log.info("添加一个熊猫，id 为 {}", panda.getPandaId());
     }
 
     /**
@@ -132,7 +147,8 @@ public class PandaServiceImpl implements PandaService {
             return;
         }
         List<Panda> pandas = pandaDtos.stream().map(Converter.INSTANCE::toPanda).toList();
-        mapper.insert(pandas, Constants.INSERT_BATCH_SIZE);
+        var inserted = mapper.insert(pandas, Constants.INSERT_BATCH_SIZE).size();
+        log.info("批量添加 {} 只熊猫，成功 {} 条数据",pandaDtos.size(), inserted);
     }
 
 
@@ -144,7 +160,9 @@ public class PandaServiceImpl implements PandaService {
     @Transactional
     @Override
     public void updateOne(PandaDto pandaDto) {
-        mapper.updateById(Converter.INSTANCE.toPanda(pandaDto));
+        Panda panda = Converter.INSTANCE.toPanda(pandaDto);
+        mapper.updateById(panda);
+        log.info("更新熊猫 {}", pandaDto.getPandaName());
     }
 
     /**
@@ -155,6 +173,7 @@ public class PandaServiceImpl implements PandaService {
     @Override
     public void deleteOneById(Integer id) {
         mapper.deleteById(id);
+        log.info("删除熊猫 {}", id);
     }
 
     /**
@@ -166,6 +185,7 @@ public class PandaServiceImpl implements PandaService {
     public void deleteOneByName(String name) {
         mapper.delete(new LambdaQueryWrapper<Panda>()
                 .eq(Panda::getPandaName, name));
+        log.info("删除熊猫 {}", name);
     }
 
     /**
@@ -175,6 +195,7 @@ public class PandaServiceImpl implements PandaService {
      */
     @Override
     public void deleteMany(List<Integer> ids) {
-        mapper.deleteByIds(ids);
+        int deleted = mapper.deleteByIds(ids);
+        log.info("批量删除 {} 只熊猫，成功删除 {} 条数据", ids.size(), deleted);
     }
 }

@@ -2,8 +2,6 @@ package me.lhy.pandaid.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.lhy.pandaid.domain.dto.LoginDto;
-import me.lhy.pandaid.domain.dto.RegisterDto;
 import me.lhy.pandaid.domain.dto.UserDto;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Result;
@@ -22,24 +20,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "用户登录")
-    @PostMapping("/login")
-    public Result<Void> login(@RequestBody LoginDto loginDto) {
-        userService.login(loginDto);
-        return Result.success();
-    }
-
-    @Operation(summary = "用户注册")
-    @PostMapping("/register")
-    public Result<Void> register(@RequestBody RegisterDto registerDto) {
-        userService.register(registerDto);
-        return Result.success();
-    }
-
     @Operation(summary = "获取所有用户")
     @GetMapping("/getAll")
-    public Result<List<UserDto>> getAllUsers() {
-        var users = userService.getAll();
+    public Result<List<UserDto>> getAllUsers(@RequestParam int pageNum, @RequestParam int pageSize) {
+        var users = userService.getAllWithPage(pageNum, pageSize);
         return Result.success(users);
     }
 
@@ -66,16 +50,9 @@ public class UserController {
 
     @Operation(summary = "获取已删除的用户")
     @GetMapping("/getDeleted")
-    public Result<List<UserDto>> getDeleted() {
-        var users = userService.getDeleted();
+    public Result<List<UserDto>> getDeleted(@RequestParam int pageNum, @RequestParam int pageSize) {
+        var users = userService.getDeletedWithPage(pageNum, pageSize);
         return Result.success(users);
-    }
-
-    @Operation(summary = "添加一个用户")
-    @PostMapping("/addOne")
-    public Result<Void> addOne(@RequestBody UserDto userDto) {
-        userService.addOne(userDto);
-        return Result.success();
     }
 
     @Operation(summary = "添加多个用户")

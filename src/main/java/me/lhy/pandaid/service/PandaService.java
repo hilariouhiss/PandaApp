@@ -26,7 +26,7 @@ public interface PandaService {
     Long getCount();
 
     // 查询被删除的大熊猫
-    List<PandaDto> getDeleted();
+    List<PandaDto> getDeletedWithPage(int pageNum, int pageSize);
 
     // 添加
     // 添加单个大熊猫
