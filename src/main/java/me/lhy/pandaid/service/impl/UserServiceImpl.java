@@ -46,10 +46,7 @@ public class UserServiceImpl implements UserService {
      * @return 用户信息
      * @throws UsernameNotFoundException 用户不存在
      */
-    @LogOperation(
-            value = "用户登录操作",
-            maskFields = {"password"}
-    )
+    @LogOperation(value = "用户登录操作", maskFields = {"password"})
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var wrapper = new LambdaQueryWrapper<User>().eq(User::getUsername, username);
@@ -71,8 +68,7 @@ public class UserServiceImpl implements UserService {
      */
     private boolean validateUser(RegisterDto dto) {
         // 基础非空校验
-        if (dto.getUsername().isBlank() || dto.getPassword().isBlank()
-                || dto.getPhoneNumber().isBlank()) {
+        if (dto.getUsername().isBlank() || dto.getPassword().isBlank() || dto.getPhoneNumber().isBlank()) {
             return false;
         }
         // 密码强度校验（至少8位，含大小写字母、数字、特殊字符）
@@ -91,10 +87,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param dto 注册信息
      */
-    @LogOperation(
-            value = "用户注册操作",
-            maskFields = {"password", "phoneNumber"}
-    )
+    @LogOperation(value = "用户注册操作", maskFields = {"password", "phoneNumber"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void register(RegisterDto dto) {
@@ -103,13 +96,11 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("注册信息不合法");
         }
         // 判断用户名是否已存在
-        if (userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, dto.getUsername())) != null) {
+        if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, dto.getUsername())) != null) {
             throw new UserAlreadyExistsException("用户已存在");
         }
         // 判断手机号是否已存在
-        if (userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getPhoneNumber, dto.getPhoneNumber())) != null) {
+        if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getPhoneNumber, dto.getPhoneNumber())) != null) {
             throw new UserAlreadyExistsException("手机号已存在");
         }
         // 加密密码
@@ -118,8 +109,7 @@ public class UserServiceImpl implements UserService {
         // 插入用户
         userMapper.insert(user);
         // 在user_role关联表中为该用户插入对应的角色
-        Role role = roleMapper.selectOne(new LambdaQueryWrapper<Role>()
-                .eq(Role::getName, dto.getAccountType()));
+        Role role = roleMapper.selectOne(new LambdaQueryWrapper<Role>().eq(Role::getName, dto.getAccountType()));
         UserRole userRole = new UserRole(user.getId(), role.getId());
         userRoleMapper.insert(userRole);
     }
@@ -131,9 +121,7 @@ public class UserServiceImpl implements UserService {
      * @param pageSize 页大小
      * @return 指定页的用户
      */
-    @LogOperation(
-            value = "获取所有用户信息"
-    )
+    @LogOperation(value = "获取所有用户信息")
     @Override
     public List<UserDto> getAllWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
@@ -147,9 +135,7 @@ public class UserServiceImpl implements UserService {
      * @param id 用户id
      * @return 用户信息
      */
-    @LogOperation(
-            value = "获取所有用户信息"
-    )
+    @LogOperation(value = "获取所有用户信息")
     @Override
     public UserDto getOneById(Long id) {
         return Converter.INSTANCE.toUserDto(userMapper.selectById(id));
@@ -161,9 +147,7 @@ public class UserServiceImpl implements UserService {
      * @param username 用户名
      * @return 用户信息
      */
-    @LogOperation(
-            value = "获取所有用户信息"
-    )
+    @LogOperation(value = "获取所有用户信息")
     @Override
     public UserDto getOneByUsername(String username) {
         return Converter.INSTANCE.toUserDto(userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username)));
@@ -174,9 +158,7 @@ public class UserServiceImpl implements UserService {
      *
      * @return 用户总数
      */
-    @LogOperation(
-            value = "获取用户总数"
-    )
+    @LogOperation(value = "获取用户总数")
     @Override
     public Long getCount() {
         return userMapper.selectCount(null);
@@ -187,9 +169,7 @@ public class UserServiceImpl implements UserService {
      *
      * @return 已删除的用户
      */
-    @LogOperation(
-            value = "获取已删除的用户"
-    )
+    @LogOperation(value = "获取已删除的用户")
     @Override
     public List<UserDto> getDeletedWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
@@ -215,9 +195,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param userDto 新用户信息
      */
-    @LogOperation(
-            value = "更新单个用户"
-    )
+    @LogOperation(value = "更新单个用户")
     @Transactional
     @Override
     public void updateOne(UserDto userDto) {
@@ -229,9 +207,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param id 用户id
      */
-    @LogOperation(
-            value = "根据id删除用户"
-    )
+    @LogOperation(value = "根据id删除用户")
     @Transactional
     @Override
     public void deleteOneById(Long id) {
@@ -243,14 +219,11 @@ public class UserServiceImpl implements UserService {
      *
      * @param username 用户名
      */
-    @LogOperation(
-            value = "根据用户名删除用户"
-    )
+    @LogOperation(value = "根据用户名删除用户")
     @Transactional
     @Override
     public void deleteOneByUsername(String username) {
-        userMapper.delete(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, username));
+        userMapper.delete(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
     }
 
     /**
@@ -258,9 +231,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param ids 用户id列表
      */
-    @LogOperation(
-            value = "批量删除用户"
-    )
+    @LogOperation(value = "批量删除用户")
     @Transactional
     @Override
     public void deleteMany(List<Long> ids) {

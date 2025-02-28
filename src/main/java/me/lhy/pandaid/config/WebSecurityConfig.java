@@ -1,6 +1,8 @@
 package me.lhy.pandaid.config;
 
 import me.lhy.pandaid.filter.JwtAuthenticationFilter;
+import me.lhy.pandaid.handler.CustomAuthenticationFailureHandler;
+import me.lhy.pandaid.handler.CustomAuthenticationSuccessHandler;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +30,14 @@ public class WebSecurityConfig {
 
     private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    public WebSecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public WebSecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.userService = userService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
 
     @Bean
@@ -79,8 +85,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // 禁用默认登录和登出页
-        http.formLogin(AbstractHttpConfigurer::disable)
+        http.formLogin(form -> form
+                    .successHandler(customAuthenticationSuccessHandler)
+                    .failureHandler(customAuthenticationFailureHandler))
+            // 禁用默认登出页
             .logout(AbstractHttpConfigurer::disable)
             // 配置passwordEncoder
             .authenticationProvider(authenticationProvider())
@@ -91,16 +99,9 @@ public class WebSecurityConfig {
             // 禁用httpBasic
             .httpBasic(AbstractHttpConfigurer::disable)
             // 配置session管理
-            .sessionManagement(
-                    sessionManagement -> sessionManagement
-                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 将jwtAuthenticationFilter添加到过滤器链中
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/register", "/login","/panda/getOneByName").permitAll()
-                    .requestMatchers("/swagger-ui.html","/api-docs").hasRole("DEVELOPER")
-                    .anyRequest().authenticated()
-            );
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/login", "/panda/getOneByName").permitAll().requestMatchers("/swagger-ui.html", "/api-docs").hasRole("DEVELOPER").anyRequest().authenticated());
 
         return http.build();
     }

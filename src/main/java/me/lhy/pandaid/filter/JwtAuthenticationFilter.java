@@ -6,8 +6,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.log4j.Log4j2;
+import me.lhy.pandaid.annotation.LogOperation;
 import me.lhy.pandaid.service.UserService;
+import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.JwtUtil;
 import me.lhy.pandaid.util.Result;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserService userService;
@@ -30,11 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
+    @LogOperation("JWT认证过滤器")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String jwtToken = request.getHeader("Authorization");
+        String jwtToken = request.getHeader(Constants.EXPOSURE_HEADER);
         if (jwtToken != null && !jwtToken.isEmpty()) {
             if (JwtUtil.validateToken(jwtToken)) {
                 Claims claims = JwtUtil.parseToken(jwtToken);
@@ -50,12 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         user.getUsername(), null, user.getAuthorities());
                 // 加入安全上下文
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                log.info("用户 {} 成功登录", username);
             } else {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write(
-                        objectMapper.writeValueAsString(Result.fail(401, "请登录"))
+                        objectMapper.writeValueAsString(Result.fail(HttpServletResponse.SC_UNAUTHORIZED, "请登录"))
                 );
             }
         }

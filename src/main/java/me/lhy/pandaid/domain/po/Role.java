@@ -37,10 +37,22 @@ public class Role implements GrantedAuthority {
 
     @Schema(description = "是否删除")
     @TableLogic
-    private Integer isDeleted;
+    private Boolean isDeleted;
 
     @Override
     public String getAuthority() {
         return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

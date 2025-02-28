@@ -1,15 +1,19 @@
 package me.lhy.pandaid.domain.dto;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import me.lhy.pandaid.domain.po.Role;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class UserDto implements Serializable {
 
     @Serial
@@ -25,13 +29,17 @@ public class UserDto implements Serializable {
 
     private Date updatedAt;
 
+    private List<Role> roles;
+
     @Override
     public String toString() {
         return "UserDto{" +
                 "username='" + username + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", gender='" + gender + '\'' +
+                ", gender=" + gender +
                 ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", roles=" + roles +
                 '}';
     }
 }
