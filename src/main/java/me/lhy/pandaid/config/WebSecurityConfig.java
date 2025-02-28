@@ -3,11 +3,9 @@ package me.lhy.pandaid.config;
 import me.lhy.pandaid.filter.JwtAuthenticationFilter;
 import me.lhy.pandaid.handler.CustomAuthenticationFailureHandler;
 import me.lhy.pandaid.handler.CustomAuthenticationSuccessHandler;
-import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,17 +28,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserService userService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsService userDetailsService;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    public WebSecurityConfig(@Lazy UserService userService,
-                             @Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
-                             @Lazy CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+    public WebSecurityConfig(UserDetailsService userDetailsService,
+                             CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
                              CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
-         this.userService = userService;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+         this.userDetailsService = userDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
@@ -54,7 +50,7 @@ public class WebSecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userService);
+        provider.setUserDetailsService(userDetailsService);
         return provider;
     }
 
@@ -105,7 +101,7 @@ public class WebSecurityConfig {
             // 配置session管理
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 将jwtAuthenticationFilter添加到过滤器链中
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/login", "/panda/getOneByName").permitAll().requestMatchers("/swagger-ui.html", "/api-docs").hasRole("DEVELOPER").anyRequest().authenticated());
+            .addFilterBefore(new JwtAuthenticationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class).authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/login", "/panda/getOneByName").permitAll().requestMatchers("/swagger-ui.html", "/api-docs").hasRole("DEVELOPER").anyRequest().authenticated());
 
         return http.build();
     }

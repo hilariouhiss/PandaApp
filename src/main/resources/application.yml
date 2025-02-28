@@ -44,7 +44,7 @@ spring:
         max-size: 8
         queue-capacity: 100
 mybatis-plus:
-  global-config:  # 全局设置
+  global-config: # 全局设置
     banner: false  # 关闭banner
     db-config:
       id-type: auto  # 主键类型 - 递增
@@ -80,3 +80,6 @@ logging:
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+node:
+  id: 1

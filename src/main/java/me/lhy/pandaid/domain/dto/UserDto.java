@@ -21,6 +21,8 @@ public class UserDto implements Serializable {
 
     private String username;
 
+    private String nickname;
+
     private String phoneNumber;
 
     private Character gender;
@@ -35,6 +37,7 @@ public class UserDto implements Serializable {
     public String toString() {
         return "UserDto{" +
                 "username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", gender=" + gender +
                 ", createdAt=" + createdAt +

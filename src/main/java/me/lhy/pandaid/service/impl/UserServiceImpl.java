@@ -6,7 +6,6 @@ import me.lhy.pandaid.annotation.LogOperation;
 import me.lhy.pandaid.domain.dto.RegisterDto;
 import me.lhy.pandaid.domain.dto.UserDto;
 import me.lhy.pandaid.domain.po.Role;
-import me.lhy.pandaid.domain.po.SecurityUser;
 import me.lhy.pandaid.domain.po.User;
 import me.lhy.pandaid.domain.po.UserRole;
 import me.lhy.pandaid.exception.BatchProcessException;
@@ -17,11 +16,10 @@ import me.lhy.pandaid.mapper.UserMapper;
 import me.lhy.pandaid.mapper.UserRoleMapper;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Converter;
+import me.lhy.pandaid.util.UserIdGenerator;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,36 +34,18 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleMapper roleMapper;
     private final UserRoleMapper userRoleMapper;
+    private final UserIdGenerator userIdGenerator;
 
 
-    public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder, RoleMapper roleMapper, UserRoleMapper userRoleMapper) {
+    public UserServiceImpl(UserMapper userMapper,
+                           PasswordEncoder passwordEncoder,
+                           RoleMapper roleMapper,
+                           UserRoleMapper userRoleMapper, UserIdGenerator userIdGenerator) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleMapper = roleMapper;
         this.userRoleMapper = userRoleMapper;
-    }
-
-    /**
-     * 根据用户名加载用户信息
-     *
-     * @param username 用户名
-     * @return 用户信息
-     * @throws UsernameNotFoundException 用户不存在
-     */
-
-    @LogOperation(value = "用户登录操作", maskFields = {"password"})
-    @Override
-    @Cacheable(value = "user", key = "#username", unless = "#result == null")
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var wrapper = new LambdaQueryWrapper<User>().eq(User::getUsername, username);
-        User user = userMapper.selectOne(wrapper);
-        if (user == null) {
-            throw new UsernameNotFoundException("用户不存在");
-        }
-        // 获取用户所有角色
-        List<Role> roles = roleMapper.getUserRoles(user.getId());
-        // 返回包含用户名，密码和权限的用户实体
-        return new SecurityUser(user, roles);
+        this.userIdGenerator = userIdGenerator;
     }
 
     /**
@@ -76,9 +56,14 @@ public class UserServiceImpl implements UserService {
      */
     private boolean validateUser(RegisterDto dto) {
         // 基础非空校验
-        if (dto.getUsername().isBlank() || dto.getPassword().isBlank() || dto.getPhoneNumber().isBlank()) {
+        if (dto.getNickname().isBlank() || dto.getPassword().isBlank() || dto.getPhoneNumber().isBlank()) {
             return false;
         }
+        // 用户昵称校验，长度在1-15位之间
+        if(dto.getNickname().length() > 15){
+            return false;
+        }
+
         // 密码强度校验（至少8位，含大小写字母、数字、特殊字符）
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,50}$";
         if (!dto.getPassword().matches(passwordPattern)) {
@@ -104,16 +89,15 @@ public class UserServiceImpl implements UserService {
         if (!validateUser(dto)) {
             throw new IllegalArgumentException("注册信息不合法");
         }
-        // 判断用户名是否已存在
-        if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, dto.getUsername())) != null) {
-            throw new UserAlreadyExistsException("用户已存在");
-        }
         // 判断手机号是否已存在
         if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getPhoneNumber, dto.getPhoneNumber())) != null) {
             throw new UserAlreadyExistsException("手机号已存在");
         }
-        // 加密密码
         User user = Converter.INSTANCE.toUser(dto);
+        // 生成唯一username(16位英文、数字、下划线和数字点构成)
+        String username = userIdGenerator.nextId();
+        user.setUsername(username);
+        // 加密密码
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         // 插入用户
         userMapper.insert(user);

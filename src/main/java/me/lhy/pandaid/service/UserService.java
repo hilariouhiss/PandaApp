@@ -2,11 +2,10 @@ package me.lhy.pandaid.service;
 
 import me.lhy.pandaid.domain.dto.RegisterDto;
 import me.lhy.pandaid.domain.dto.UserDto;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService {
+public interface UserService{
 
     // 用户注册
     void register(RegisterDto dto);

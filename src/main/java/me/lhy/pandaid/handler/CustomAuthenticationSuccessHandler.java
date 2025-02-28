@@ -6,12 +6,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import me.lhy.pandaid.domain.dto.UserDto;
 import me.lhy.pandaid.domain.po.SecurityUser;
 import me.lhy.pandaid.domain.po.User;
-import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.Converter;
 import me.lhy.pandaid.util.JwtUtil;
 import me.lhy.pandaid.util.Result;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +21,9 @@ import java.io.IOException;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
 
-    public CustomAuthenticationSuccessHandler(UserService userService) {this.userService = userService;}
+    public CustomAuthenticationSuccessHandler(UserDetailsService userDetailsService) {this.userDetailsService = userDetailsService;}
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -43,7 +43,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // 将 JWT 添加到响应头
         response.addHeader(Constants.EXPOSURE_HEADER, accessToken);
         // 加载 SecurityUser
-        SecurityUser securityUser = (SecurityUser) userService.loadUserByUsername(user.getUsername());
+        SecurityUser securityUser = (SecurityUser) userDetailsService.loadUserByUsername(user.getUsername());
         // 取出 user 对象后转为 dto
         User user1 = securityUser.getUser();
         UserDto dto = Converter.INSTANCE.toUserDto(user1);

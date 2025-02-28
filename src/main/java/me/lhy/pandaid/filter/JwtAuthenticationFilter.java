@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.lhy.pandaid.annotation.LogOperation;
-import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.JwtUtil;
 import me.lhy.pandaid.util.Result;
@@ -27,7 +26,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter( UserService userDetailsService) {
+
+
+    public JwtAuthenticationFilter( UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 

@@ -17,11 +17,14 @@ public class User {
     @Schema(description="用户id")
     private Long id;
 
-    @Schema(description="用户名")
+    @Schema(description="用户唯一ID")
     private String username;
 
     @Schema(description="用户密码")
     private String password;
+
+    @Schema(description="用户昵称")
+    private String nickname;
 
     @Schema(description="用户手机号")
     private String phoneNumber;
