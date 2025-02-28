@@ -7,6 +7,7 @@ import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -33,8 +34,11 @@ public class WebSecurityConfig {
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    public WebSecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
-        this.userService = userService;
+    public WebSecurityConfig(@Lazy UserService userService,
+                             @Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
+                             @Lazy CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                             CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
+         this.userService = userService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;

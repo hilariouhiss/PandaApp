@@ -13,7 +13,7 @@ spring:
       key-prefix: "CACHE:"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${mysql.addr}/pandaid?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true
+    url: jdbc:mysql://${mysql.addr}/pandaApp?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true
     username: ${mysql.username}
     password: ${mysql.password}
     # 数据库连接池配置

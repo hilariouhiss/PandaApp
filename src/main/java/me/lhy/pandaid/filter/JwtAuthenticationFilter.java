@@ -14,6 +14,7 @@ import me.lhy.pandaid.util.Result;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,12 +23,12 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter( UserService userService) {
-        this.userService = userService;
+    public JwtAuthenticationFilter( UserService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @LogOperation("JWT认证过滤器")
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
                 String username = claims.getSubject();
-                UserDetails user =  userService.loadUserByUsername(username);
+                UserDetails user =  userDetailsService.loadUserByUsername(username);
 
                 // 创建认证对象
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
