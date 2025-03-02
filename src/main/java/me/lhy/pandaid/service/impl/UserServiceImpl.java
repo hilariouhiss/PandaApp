@@ -45,25 +45,36 @@ public class UserServiceImpl implements UserService {
         this.userRoleMapper = userRoleMapper;
     }
 
-    /**
-     * 校验注册信息
-     *
-     * @param dto 注册信息
-     */
-    private void validateUser(RegisterDTO dto) {
-        // 基础非空校验
-        if (dto.getNickname().isBlank() || dto.getPassword().isBlank()) {
-            throw new RegisterInfoEmptyException("用户昵称或密码不能为空");
-        }
-        // 用户昵称校验，长度在1-15位之间
-        if (dto.getNickname().length() > 15) {
-            throw new NicknameTooLongException("用户昵称超过15字符限制");
-        }
-
+    private void checkPassword(String password) {
         // 密码强度校验（至少8位，含大小写字母、数字、特殊字符）
-        String passwordPattern = Constants.PASSWORD_PATTERN;
-        if (!dto.getPassword().matches(passwordPattern)) {
-            throw new PasswordStrengthException("密码需包含大小写字母、数字及特殊字符");
+        if (!password.matches(Constants.PASSWORD_PATTERN)) {
+            throw new PasswordFormatException("密码需包含大小写字母、数字及特殊字符，至少8位");
+        }
+    }
+
+    private void checkUsername(String username) {
+        if (!username.matches(Constants.USERNAME_PATTERN)){
+            throw new UsernameFormatException("用户名只能由数字、字母、下划线和点构成，最长16位");
+        }
+    }
+
+    private void checkNickname(String nickname) {
+        // 用户昵称校验，长度在1-15位之间
+        if (nickname.length() > 15) {
+            throw new NicknameFormatException("用户昵称超过15字符限制");
+        }
+    }
+
+    private void checkPhoneNumber(String phoneNumber) {
+        if (!phoneNumber.matches(Constants.PHONE_NUMBER_PATTERN)) {
+            throw new PhoneFormatException("电话号码不符合格式");
+        }
+    }
+
+    private void checkGender(Character gender) {
+        char g = Character.toUpperCase(gender);
+        if (g != 'M' && g != 'F') {
+            throw new GenderFormatException("性别格式错误(M/F)");
         }
     }
 
@@ -77,12 +88,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @CacheEvict(value = {"user", "userCount"}, allEntries = true)
     public void register(RegisterDTO dto) {
-        // 检查注册信息是否正确
-        validateUser(dto);
-        // 判断username是否已存在
-        if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, dto.getNickname())) != null) {
-            throw new UserAlreadyExistsException("用户名已存在");
+        if (dto.getNickname() == null ||
+                dto.getPassword() == null ||
+                dto.getDeviceInfo() == null) {
+            throw new RegisterInfoEmptyException("必要注册信息不能为空");
         }
+        // 检查注册信息是否正确
+        checkNickname(dto.getNickname());
+        checkPassword(dto.getPassword());
         User user = Converter.INSTANCE.toUser(dto);
         // 生成默认username
         String username = Generator.generateUsername(dto.getDeviceInfo());
@@ -194,14 +207,28 @@ public class UserServiceImpl implements UserService {
     /**
      * 更新单个用户
      *
-     * @param userDto 新用户信息
+     * @param dto 新用户信息
      */
     @LogOperation(value = "更新单个用户")
     @Transactional
     @Override
     @CacheEvict(value = {"user", "users"}, allEntries = true)
-    public void updateOne(UserDTO userDto) {
-        User user = Converter.INSTANCE.toUser(userDto);
+    public void updateOne(UserDTO dto) {
+
+        if (!dto.getUsername().isBlank()){
+            checkUsername(dto.getUsername());
+        }
+        if (!dto.getNickname().isBlank()){
+            checkNickname(dto.getNickname());
+        }
+        if (!dto.getPhoneNumber().isBlank()){
+            checkPhoneNumber(dto.getPhoneNumber());
+
+        }
+        if (dto.getGender()!=null){
+            checkGender(dto.getGender());
+        }
+        User user = Converter.INSTANCE.toUser(dto);
         // 根据用户名更新用户
         userMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
     }
