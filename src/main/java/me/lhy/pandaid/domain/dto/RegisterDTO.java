@@ -7,11 +7,10 @@ import me.lhy.pandaid.util.AccountType;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class RegisterDto implements Serializable {
+public class RegisterDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -20,11 +19,7 @@ public class RegisterDto implements Serializable {
 
     private String password;
 
-    private String phoneNumber;
-
-    private Character gender;
-
-    private LocalDateTime createdAt;
+    private DeviceInfoDTO deviceInfo;
 
     private AccountType accountType = AccountType.USER;
 }

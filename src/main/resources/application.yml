@@ -46,6 +46,9 @@ spring:
 mybatis-plus:
   global-config: # 全局设置
     banner: false  # 关闭banner
+    sequence:
+      worker-id: ${MACHINE_ID}  # 机器id
+      datacenter-id: ${DATACENTER_ID}  # 数据中心id
     db-config:
       id-type: auto  # 主键类型 - 递增
       logic-delete-field: deleted  # 逻辑删除字段
@@ -80,6 +83,3 @@ logging:
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
-node:
-  id: 1

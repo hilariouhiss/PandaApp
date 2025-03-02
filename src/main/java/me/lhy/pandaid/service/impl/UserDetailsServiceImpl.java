@@ -23,7 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserMapper userMapper;
     private final RoleMapper roleMapper;
 
-    public UserDetailsServiceImpl(UserMapper userMapper, RoleMapper roleMapper) {this.userMapper = userMapper;
+    public UserDetailsServiceImpl(UserMapper userMapper, RoleMapper roleMapper) {
+        this.userMapper = userMapper;
         this.roleMapper = roleMapper;
     }
 

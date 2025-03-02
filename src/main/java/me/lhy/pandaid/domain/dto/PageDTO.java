@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public class PageDto implements Serializable {
+public class PageDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -16,12 +16,4 @@ public class PageDto implements Serializable {
     private Integer num;
 
     private Integer size;
-
-    @Override
-    public String toString() {
-        return "PageDto{" +
-                "pageNum=" + num +
-                ", pageSize=" + size +
-                '}';
-    }
 }

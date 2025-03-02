@@ -35,7 +35,7 @@ public class WebSecurityConfig {
     public WebSecurityConfig(UserDetailsService userDetailsService,
                              CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
                              CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
-         this.userDetailsService = userDetailsService;
+        this.userDetailsService = userDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }

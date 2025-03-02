@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public class PandaDto implements Serializable {
+public class PandaDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

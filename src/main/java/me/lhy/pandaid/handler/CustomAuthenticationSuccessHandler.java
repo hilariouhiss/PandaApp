@@ -3,7 +3,7 @@ package me.lhy.pandaid.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import me.lhy.pandaid.domain.dto.UserDto;
+import me.lhy.pandaid.domain.dto.UserDTO;
 import me.lhy.pandaid.domain.po.SecurityUser;
 import me.lhy.pandaid.domain.po.User;
 import me.lhy.pandaid.util.Constants;
@@ -46,11 +46,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         SecurityUser securityUser = (SecurityUser) userDetailsService.loadUserByUsername(user.getUsername());
         // 取出 user 对象后转为 dto
         User user1 = securityUser.getUser();
-        UserDto dto = Converter.INSTANCE.toUserDto(user1);
+        UserDTO dto = Converter.INSTANCE.toUserDto(user1);
         // 放入 roles
         dto.setRoles(securityUser.getRoles());
         // 返回 UserDto
-        Result<UserDto> result = Result.success(dto);
+        Result<UserDTO> result = Result.success(dto);
         response.getWriter().write(objectMapper.writeValueAsString(result));
     }
 }

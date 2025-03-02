@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class UserDto implements Serializable {
+public class UserDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -32,17 +32,4 @@ public class UserDto implements Serializable {
     private LocalDateTime updatedAt;
 
     private List<Role> roles;
-
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "username='" + username + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", gender=" + gender +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", roles=" + roles +
-                '}';
-    }
 }

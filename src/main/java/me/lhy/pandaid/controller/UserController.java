@@ -2,7 +2,7 @@ package me.lhy.pandaid.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.lhy.pandaid.domain.dto.UserDto;
+import me.lhy.pandaid.domain.dto.UserDTO;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Result;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +22,21 @@ public class UserController {
 
     @Operation(summary = "获取所有用户")
     @GetMapping("/getAll")
-    public Result<List<UserDto>> getAllUsers(@RequestParam int pageNum, @RequestParam int pageSize) {
+    public Result<List<UserDTO>> getAllUsers(@RequestParam int pageNum, @RequestParam int pageSize) {
         var users = userService.getAllWithPage(pageNum, pageSize);
         return Result.success(users);
     }
 
     @Operation(summary = "根据ID获取单个用户")
     @GetMapping("/getOneById")
-    public Result<UserDto> getOneById(@RequestParam Long id) {
+    public Result<UserDTO> getOneById(@RequestParam Long id) {
         var user = userService.getOneById(id);
         return Result.success(user);
     }
 
     @Operation(summary = "根据用户名获取单个用户")
     @GetMapping("/getOneByUsername")
-    public Result<UserDto> getOneByUsername(@RequestParam String username) {
+    public Result<UserDTO> getOneByUsername(@RequestParam String username) {
         var user = userService.getOneByUsername(username);
         return Result.success(user);
     }
@@ -50,29 +50,22 @@ public class UserController {
 
     @Operation(summary = "获取已删除的用户")
     @GetMapping("/getDeleted")
-    public Result<List<UserDto>> getDeleted(@RequestParam int pageNum, @RequestParam int pageSize) {
+    public Result<List<UserDTO>> getDeleted(@RequestParam int pageNum, @RequestParam int pageSize) {
         var users = userService.getDeletedWithPage(pageNum, pageSize);
         return Result.success(users);
     }
 
     @Operation(summary = "添加多个用户")
     @PostMapping("/addMany")
-    public Result<Void> addMany(@RequestBody List<UserDto> userDtos) {
-        userService.addMany(userDtos);
+    public Result<Void> addMany(@RequestBody List<UserDTO> userDTOS) {
+        userService.addMany(userDTOS);
         return Result.success();
     }
 
     @Operation(summary = "更新一个用户")
     @PutMapping("/updateOne")
-    public Result<Void> updateOne(@RequestBody UserDto userDto) {
+    public Result<Void> updateOne(@RequestBody UserDTO userDto) {
         userService.updateOne(userDto);
-        return Result.success();
-    }
-
-    @Operation(summary = "根据ID删除一个用户")
-    @DeleteMapping("/deleteOneById")
-    public Result<Void> deleteOneById(@RequestParam Long id) {
-        userService.deleteOneById(id);
         return Result.success();
     }
 
@@ -80,13 +73,6 @@ public class UserController {
     @DeleteMapping("/deleteOneByUsername")
     public Result<Void> deleteOneByUsername(@RequestParam String username) {
         userService.deleteOneByUsername(username);
-        return Result.success();
-    }
-
-    @Operation(summary = "根据ID删除多个用户")
-    @DeleteMapping("/deleteMany")
-    public Result<Void> deleteMany(@RequestBody List<Long> ids) {
-        userService.deleteMany(ids);
         return Result.success();
     }
 }
