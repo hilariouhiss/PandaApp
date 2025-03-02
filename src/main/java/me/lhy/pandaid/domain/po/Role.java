@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,15 +29,16 @@ public class Role implements GrantedAuthority {
 
     @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @Schema(description = "是否删除")
     @TableLogic
-    private Boolean isDeleted;
+    @TableField("is_deleted")
+    private Boolean deleted;
 
     @Override
     public String getAuthority() {
@@ -52,7 +53,7 @@ public class Role implements GrantedAuthority {
                 ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", isDeleted=" + isDeleted +
+                ", deleted=" + deleted +
                 '}';
     }
 }

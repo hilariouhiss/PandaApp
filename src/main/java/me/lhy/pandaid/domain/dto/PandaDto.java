@@ -20,7 +20,7 @@ public class PandaDto implements Serializable {
 
     private Integer pandaAge;
 
-    private String pandaSex;
+    private Character pandaSex;
 
-    private Character pandaInfo;
+    private String pandaInfo;
 }

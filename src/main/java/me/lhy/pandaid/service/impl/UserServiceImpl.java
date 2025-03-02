@@ -58,19 +58,19 @@ public class UserServiceImpl implements UserService {
         }
         // 用户昵称校验，长度在1-15位之间
         if(dto.getNickname().length() > 15){
-            throw new NicknameTooLongException("用户昵称过长");
+            throw new NicknameTooLongException("用户昵称超过15字符限制");
         }
 
         // 密码强度校验（至少8位，含大小写字母、数字、特殊字符）
         String passwordPattern = Constants.PASSWORD_PATTERN;
         if (!dto.getPassword().matches(passwordPattern)) {
-            throw new PasswordStrengthException("密码强度不符合要求");
+            throw new PasswordStrengthException("密码需包含大小写字母、数字及特殊字符");
         }
 
         // 手机号格式校验（至少11位，以数字1开头）
         String phonePattern = Constants.PHONE_NUMBER_PATTERN;
         if (!dto.getPhoneNumber().matches(phonePattern)){
-            throw new PhoneFormatException("手机号格式不正确");
+            throw new PhoneFormatException("手机号需为1开头的11位数字");
         }
     }
 

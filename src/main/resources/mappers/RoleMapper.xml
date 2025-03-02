@@ -6,6 +6,6 @@
         from role r
                  inner join user_role ur on r.id = ur.role_id
         where ur.user_id = #{id}
-          and r.is_deleted = false
+          and r.is_deleted = 0
     </select>
 </mapper>

@@ -8,7 +8,7 @@ import me.lhy.pandaid.domain.po.Role;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -27,9 +27,9 @@ public class UserDto implements Serializable {
 
     private Character gender;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     private List<Role> roles;
 

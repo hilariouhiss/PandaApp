@@ -8,16 +8,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class User {
 
-    @Schema(description="用户id")
+    @Schema(description="用户表主键")
     private Long id;
 
-    @Schema(description="用户唯一ID")
+    @Schema(description="用户唯一标识符")
     private String username;
 
     @Schema(description="用户密码")
@@ -34,14 +34,15 @@ public class User {
 
     @Schema(description="创建时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Schema(description="更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @Schema(description="是否删除")
     @TableLogic
+    @TableField("is_deleted")
     private Boolean deleted;
 
     @Override

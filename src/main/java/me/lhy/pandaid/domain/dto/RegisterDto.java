@@ -7,7 +7,7 @@ import me.lhy.pandaid.util.AccountType;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class RegisterDto implements Serializable {
 
     private Character gender;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     private AccountType accountType = AccountType.USER;
 }
