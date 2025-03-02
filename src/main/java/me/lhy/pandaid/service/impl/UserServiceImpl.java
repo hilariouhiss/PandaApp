@@ -8,13 +8,12 @@ import me.lhy.pandaid.domain.dto.UserDto;
 import me.lhy.pandaid.domain.po.Role;
 import me.lhy.pandaid.domain.po.User;
 import me.lhy.pandaid.domain.po.UserRole;
-import me.lhy.pandaid.exception.BatchProcessException;
-import me.lhy.pandaid.exception.UserAlreadyExistsException;
-import me.lhy.pandaid.exception.UserNotFoundException;
+import me.lhy.pandaid.exception.*;
 import me.lhy.pandaid.mapper.RoleMapper;
 import me.lhy.pandaid.mapper.UserMapper;
 import me.lhy.pandaid.mapper.UserRoleMapper;
 import me.lhy.pandaid.service.UserService;
+import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.Converter;
 import me.lhy.pandaid.util.UserIdGenerator;
 import org.springframework.cache.annotation.CacheConfig;
@@ -49,30 +48,30 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 验证用户注册信息是否正确
-     *
+     * 校验注册信息
      * @param dto 注册信息
-     * @return 信息是否合法
      */
-    private boolean validateUser(RegisterDto dto) {
+    private void validateUser(RegisterDto dto) {
         // 基础非空校验
         if (dto.getNickname().isBlank() || dto.getPassword().isBlank() || dto.getPhoneNumber().isBlank()) {
-            return false;
+            throw new RegisterInfoEmptyException("注册信息不能为空");
         }
         // 用户昵称校验，长度在1-15位之间
         if(dto.getNickname().length() > 15){
-            return false;
+            throw new NicknameTooLongException("用户昵称过长");
         }
 
         // 密码强度校验（至少8位，含大小写字母、数字、特殊字符）
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,50}$";
+        String passwordPattern = Constants.PASSWORD_PATTERN;
         if (!dto.getPassword().matches(passwordPattern)) {
-            return false;
+            throw new PasswordStrengthException("密码强度不符合要求");
         }
 
         // 手机号格式校验（至少11位，以数字1开头）
-        String phonePattern = "^1[3-9]\\d{9}$";
-        return dto.getPhoneNumber().matches(phonePattern);
+        String phonePattern = Constants.PHONE_NUMBER_PATTERN;
+        if (!dto.getPhoneNumber().matches(phonePattern)){
+            throw new PhoneFormatException("手机号格式不正确");
+        }
     }
 
     /**
@@ -86,9 +85,7 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = {"user","userCount"}, allEntries = true)
     public void register(RegisterDto dto) {
         // 检查注册信息是否正确
-        if (!validateUser(dto)) {
-            throw new IllegalArgumentException("注册信息不合法");
-        }
+        validateUser(dto);
         // 判断手机号是否已存在
         if (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getPhoneNumber, dto.getPhoneNumber())) != null) {
             throw new UserAlreadyExistsException("手机号已存在");
