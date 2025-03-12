@@ -40,13 +40,25 @@ public class PandaServiceImpl implements PandaService {
     /**
      * 根据id获取单个熊猫信息
      *
-     * @param id 熊猫id
+     * @param id 熊猫主键
      * @return 单个熊猫信息
      */
     @LogOperation(value = "根据id获取单个熊猫信息")
     @Override
-    public PandaDTO getOneById(Integer id) {
+    public PandaDTO getOneById(Long id) {
         Panda panda = mapper.selectById(id);
+        return Converter.INSTANCE.toPandaDto(panda);
+    }
+
+    /**
+     * 根据panda_id获取熊猫信息
+     *
+     * @param panda_id panda_id
+     * @return 单个熊猫信息
+     */
+    @Override
+    public PandaDTO getOneByPandaId(Integer panda_id) {
+        Panda panda = mapper.selectOne(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaId, panda_id));
         return Converter.INSTANCE.toPandaDto(panda);
     }
 

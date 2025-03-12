@@ -1,20 +1,23 @@
 package me.lhy.pandaid.domain.po;
 
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 public class Panda {
 
-    @Schema(description = "熊猫编号")
-    @TableId
+    @Schema(description = "表主键")
     @TableField(updateStrategy = FieldStrategy.NEVER)
+    private Long id;
+
+    @Schema(description = "熊猫编号")
     private Integer pandaId;
 
     @Schema(description = "熊猫名")

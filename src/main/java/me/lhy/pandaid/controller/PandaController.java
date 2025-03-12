@@ -32,7 +32,7 @@ public class PandaController {
 
     @Operation(summary = "根据ID获取单个大熊猫")
     @GetMapping("/getOneById")
-    public Result<PandaDTO> getOneById(@RequestParam Integer id) {
+    public Result<PandaDTO> getOneById(@RequestParam Long id) {
         var panda = service.getOneById(id);
         return Result.success(panda);
     }

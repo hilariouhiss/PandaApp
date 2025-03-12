@@ -15,10 +15,16 @@ import me.lhy.pandaid.mapper.UserRoleMapper;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.Converter;
-import me.lhy.pandaid.util.Generator;
+import me.lhy.pandaid.util.UsernameGenerator;
+import me.lhy.pandaid.util.JwtUtil;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,15 +40,18 @@ public class UserServiceImpl implements UserService {
     private final RoleMapper roleMapper;
     private final UserRoleMapper userRoleMapper;
 
+    private final AuthenticationManager authenticationManager;
+
 
     public UserServiceImpl(UserMapper userMapper,
                            PasswordEncoder passwordEncoder,
                            RoleMapper roleMapper,
-                           UserRoleMapper userRoleMapper) {
+                           UserRoleMapper userRoleMapper, AuthenticationManager authenticationManager) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleMapper = roleMapper;
         this.userRoleMapper = userRoleMapper;
+        this.authenticationManager = authenticationManager;
     }
 
     private void checkPassword(String password) {
@@ -53,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkUsername(String username) {
-        if (!username.matches(Constants.USERNAME_PATTERN)){
+        if (!username.matches(Constants.USERNAME_PATTERN)) {
             throw new UsernameFormatException("用户名只能由数字、字母、下划线和点构成，最长16位");
         }
     }
@@ -78,6 +87,23 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
+    @Override
+    public String login(String username, String password) {
+        try {
+            // 进行用户名、密码认证
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(username, password);
+            // 认证成功后，SecurityContextHolder 会保存认证信息
+            UserDetails userDetails = (UserDetails) authenticationManager.authenticate(authToken).getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            // 生成 JWT token
+            return JwtUtil.generateToken(userDetails);
+        } catch (AuthenticationException e) {
+           throw new RuntimeException("登录失败");
+        }
+    }
+
     /**
      * 注册用户
      *
@@ -98,7 +124,7 @@ public class UserServiceImpl implements UserService {
         checkPassword(dto.getPassword());
         User user = Converter.INSTANCE.toUser(dto);
         // 生成默认username
-        String username = Generator.generateUsername(dto.getDeviceInfo());
+        String username = UsernameGenerator.generate(dto.getDeviceInfo());
         // 检查用户名是否重复
         User user1 = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         if (user1 != null) {
@@ -213,19 +239,19 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     @CacheEvict(value = {"user", "users"}, allEntries = true)
-    public void updateOne(UserDTO dto) {
+    public void updateOneByUsername(UserDTO dto) {
 
-        if (!dto.getUsername().isBlank()){
+        if (!dto.getUsername().isBlank()) {
             checkUsername(dto.getUsername());
         }
-        if (!dto.getNickname().isBlank()){
+        if (!dto.getNickname().isBlank()) {
             checkNickname(dto.getNickname());
         }
-        if (!dto.getPhoneNumber().isBlank()){
+        if (!dto.getPhoneNumber().isBlank()) {
             checkPhoneNumber(dto.getPhoneNumber());
 
         }
-        if (dto.getGender()!=null){
+        if (dto.getGender() != null) {
             checkGender(dto.getGender());
         }
         User user = Converter.INSTANCE.toUser(dto);

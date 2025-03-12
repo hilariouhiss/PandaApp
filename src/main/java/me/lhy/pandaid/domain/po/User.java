@@ -3,13 +3,12 @@ package me.lhy.pandaid.domain.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class User {
 
     @Schema(description = "用户表主键")
@@ -45,4 +44,7 @@ public class User {
     @TableLogic
     @TableField("is_deleted")
     private Boolean deleted;
+
+    @TableField(exist = false)
+    private List<Role> roles;
 }

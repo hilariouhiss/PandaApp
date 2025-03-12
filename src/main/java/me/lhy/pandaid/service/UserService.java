@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface UserService {
 
+    // 用户登录
+    String login(String username, String password);
+
     // 用户注册
     void register(RegisterDTO dto);
 
@@ -32,9 +35,10 @@ public interface UserService {
 
     // 修改
     // 修改单个用户信息
-    void updateOne(UserDTO userDto);
+    void updateOneByUsername(UserDTO userDto);
 
     // 删除
     // 通过用户名删除单个用户
     void deleteOneByUsername(String username);
+
 }

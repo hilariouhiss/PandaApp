@@ -1,18 +1,18 @@
 package me.lhy.pandaid.domain.dto;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-@Getter
-@Setter
+@Data
 public class PandaDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    private Long id;
 
     private Integer pandaId;
 

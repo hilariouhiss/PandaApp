@@ -7,9 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Generator {
+public class UsernameGenerator {
 
-    public static String generateUsername(DeviceInfoDTO deviceInfo) {
+    public static String generate(DeviceInfoDTO deviceInfo) {
         if (deviceInfo == null) {
             throw new IllegalArgumentException("Device info cannot be null");
         }

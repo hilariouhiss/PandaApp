@@ -6,12 +6,14 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-public class PageDTO implements Serializable {
+public class UserRoleDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Integer num;
+    private Long id;
 
-    private Integer size;
+    private Long userId;
+
+    private Long roleId;
 }

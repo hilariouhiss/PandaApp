@@ -5,6 +5,13 @@ spring:
     name: PandaID
   profiles:
     active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: always
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
   cache:
     type: redis
     redis:
@@ -63,7 +70,7 @@ mybatis-plus:
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    path: /api-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
   api-docs:

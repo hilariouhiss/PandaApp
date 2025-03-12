@@ -65,7 +65,7 @@ public class UserController {
     @Operation(summary = "更新一个用户")
     @PutMapping("/updateOne")
     public Result<Void> updateOne(@RequestBody UserDTO userDto) {
-        userService.updateOne(userDto);
+        userService.updateOneByUsername(userDto);
         return Result.success();
     }
 

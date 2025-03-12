@@ -5,16 +5,15 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.Data;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
-public class Role implements GrantedAuthority {
+@Data
+public class Role implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -43,8 +42,6 @@ public class Role implements GrantedAuthority {
     @TableField("is_deleted")
     private Boolean deleted;
 
-    @Override
-    public String getAuthority() {
-        return this.name;
-    }
+    @TableField(exist = false)
+    private List<Permission> permissions;
 }

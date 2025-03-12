@@ -11,7 +11,9 @@ public interface PandaService {
     List<PandaDTO> getAllWithPage(Integer pageNum, Integer pageSize);
 
     // 根据ID查询单个大熊猫
-    PandaDTO getOneById(Integer id);
+    PandaDTO getOneById(Long id);
+    // 根据编号查询
+    PandaDTO getOneByPandaId(Integer panda_id);
 
     // 根据Name查询单个大熊猫
     PandaDTO getOneByName(String name);

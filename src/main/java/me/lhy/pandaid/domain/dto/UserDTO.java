@@ -2,17 +2,13 @@ package me.lhy.pandaid.domain.dto;
 
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import me.lhy.pandaid.domain.po.Role;
+import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class UserDTO implements Serializable {
 
@@ -31,5 +27,5 @@ public class UserDTO implements Serializable {
 
     private LocalDateTime updatedAt;
 
-    private List<Role> roles;
+    // private List<Role> roles;
 }
