@@ -223,9 +223,7 @@ public class UserServiceImpl implements UserService {
      * @param userDTOS 多个用户信息
      */
     @LogOperation("批量添加用户")
-    @Transactional(
-            rollbackFor = {Exception.class}
-    )
+    @Transactional(rollbackFor = {Exception.class})
     @CacheEvict(value = {"users", "userCount", "deletedUsers"}, allEntries = true)
     @Override
     public void addMany(List<UserDTO> userDTOS) {
@@ -239,9 +237,7 @@ public class UserServiceImpl implements UserService {
      * @param dto 新用户信息
      */
     @LogOperation("更新单个用户")
-    @Transactional(
-            rollbackFor = {Exception.class}
-    )
+    @Transactional(rollbackFor = {Exception.class})
     @CacheEvict(value = {"user", "users"}, allEntries = true)
     @Override
     public void updateOneByUsername(UserDTO dto) {
@@ -264,10 +260,12 @@ public class UserServiceImpl implements UserService {
         userMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
     }
 
+    /**
+     * 根据用户名删除用户
+     * @param username 用户名
+     */
     @LogOperation("根据用户名删除用户")
-    @Transactional(
-            rollbackFor = {Exception.class}
-    )
+    @Transactional(rollbackFor = {Exception.class})
     @CacheEvict(value = {"user", "users", "userCount"}, allEntries = true)
     @Override
     public void deleteOneByUsername(String username) {
@@ -281,5 +279,18 @@ public class UserServiceImpl implements UserService {
         userRoleMapper
                 .delete(new LambdaQueryWrapper<UserRole>()
                         .eq(UserRole::getUserId, user.getId()));
+    }
+
+
+    /**
+     * 物理清除已逻辑删除的用户
+     */
+    @LogOperation("物理清除已逻辑删除的用户")
+    @Transactional(rollbackFor = {Exception.class})
+    @Override
+    public void physicalDelete() {
+        var wrapper = new LambdaQueryWrapper<User>()
+                .eq(User::getDeleted, true);
+        userMapper.delete(wrapper);
     }
 }

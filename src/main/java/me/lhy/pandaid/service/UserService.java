@@ -41,4 +41,7 @@ public interface UserService {
     // 通过用户名删除单个用户
     void deleteOneByUsername(String username);
 
+    // 物理删除已逻辑删除的用户
+    void physicalDelete();
+
 }

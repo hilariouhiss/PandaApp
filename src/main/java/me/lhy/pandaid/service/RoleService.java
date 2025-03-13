@@ -22,7 +22,5 @@ public interface RoleService {
 
     void deleteOneById(Long id);
 
-    void deleteOneByName(String name);
-
     void physicalDelete();
 }
