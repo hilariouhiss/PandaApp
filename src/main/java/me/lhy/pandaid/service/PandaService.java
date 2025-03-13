@@ -12,6 +12,7 @@ public interface PandaService {
 
     // 根据ID查询单个大熊猫
     PandaDTO getOneById(Long id);
+    
     // 根据编号查询
     PandaDTO getOneByPandaId(Integer panda_id);
 

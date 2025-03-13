@@ -6,9 +6,15 @@ import java.util.List;
 
 public interface RoleService {
 
-    List<Role> getAllWithPage(int number,int size);
+    List<Role> getAllWithPage(int pageNum,int pageSize);
+
+    Role getOneByID(Long id);
 
     Role getOneByName(String name);
+
+    Long getCount();
+
+    List<Role> getDeletedWithPage(int pageNum, int pageSize);
 
     void addOne(Role role);
 
@@ -16,7 +22,7 @@ public interface RoleService {
 
     void deleteOneById(Long id);
 
-    void updateOneByName(Role role);
-
     void deleteOneByName(String name);
+
+    void physicalDelete();
 }
