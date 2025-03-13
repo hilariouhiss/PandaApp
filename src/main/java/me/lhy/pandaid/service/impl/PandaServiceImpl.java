@@ -45,6 +45,9 @@ public class PandaServiceImpl implements PandaService {
     @LogOperation(value = "根据id获取单个熊猫信息")
     @Override
     public PandaDTO getOneById(Long id) {
+        if (id == null) {
+            throw new RuntimeException("id is null");
+        }
         Panda panda = mapper.selectById(id);
         return Converter.INSTANCE.toPandaDto(panda);
     }
@@ -71,6 +74,9 @@ public class PandaServiceImpl implements PandaService {
     @LogOperation(value = "根据名字获取单个熊猫信息")
     @Override
     public PandaDTO getOneByName(String name) {
+        if (name.isBlank()) {
+            throw new RuntimeException("name is blank");
+        }
         Panda panda = mapper.selectOne(new LambdaQueryWrapper<Panda>().eq(Panda::getPandaName, name));
         return Converter.INSTANCE.toPandaDto(panda);
     }
@@ -84,6 +90,9 @@ public class PandaServiceImpl implements PandaService {
     @LogOperation(value = "根据年龄获取所有熊猫信息")
     @Override
     public List<PandaDTO> getAllByAge(Integer age) {
+        if (age < 0 || age > 50) {
+            throw new RuntimeException("age is out of range");
+        }
         return mapper.selectList(new LambdaQueryWrapper<Panda>()
                              .eq(Panda::getPandaAge, age))
                      .stream()
@@ -100,6 +109,9 @@ public class PandaServiceImpl implements PandaService {
     @LogOperation(value = "根据性别获取所有熊猫信息")
     @Override
     public List<PandaDTO> getAllBySex(Character sex) {
+        if (sex != '雌' && sex != '雄') {
+            throw new RuntimeException("大熊猫性别应为 雌/雄");
+        }
         return mapper.selectList(new LambdaQueryWrapper<Panda>()
                              .eq(Panda::getPandaSex, sex))
                      .stream()
@@ -126,6 +138,11 @@ public class PandaServiceImpl implements PandaService {
     @LogOperation(value = "获取已删除的熊猫信息")
     @Override
     public List<PandaDTO> getDeletedWithPage(int pageNum, int pageSize) {
+
+        if (pageNum < 1 || pageSize < 1) {
+            throw new RuntimeException("pageSize or pageNum can't Less than 1");
+        }
+
         Page<Panda> page = new Page<>(pageNum, pageSize);
         List<Panda> pandas = mapper.selectPage(page, new LambdaQueryWrapper<Panda>()
                 .eq(Panda::getDeleted, true)).getRecords();
@@ -188,6 +205,9 @@ public class PandaServiceImpl implements PandaService {
     @Transactional(rollbackFor = {RuntimeException.class})
     @Override
     public void deleteOneById(Integer id) {
+        if (id == null || id <= 0) {
+            throw new RuntimeException("id is null or negative");
+        }
         mapper.deleteById(id);
     }
 
@@ -200,6 +220,9 @@ public class PandaServiceImpl implements PandaService {
     @Transactional(rollbackFor = {RuntimeException.class})
     @Override
     public void deleteOneByName(String name) {
+        if (name.isBlank()) {
+            throw new RuntimeException("name is blank");
+        }
         mapper.delete(new LambdaQueryWrapper<Panda>()
                 .eq(Panda::getPandaName, name));
     }

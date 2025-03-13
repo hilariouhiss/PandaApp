@@ -3,6 +3,7 @@ package me.lhy.pandaid.controller;
 import me.lhy.pandaid.domain.dto.LoginDTO;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Result;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,9 @@ public class LoginController {
     public LoginController(UserService userService) {this.userService = userService;}
 
     @PostMapping
-    public Result<String> login(@RequestBody LoginDTO dto){
+    public Result<String> login(
+            @RequestBody @Validated LoginDTO dto
+    ) {
         String token = userService.login(dto.getUsername(), dto.getPassword());
         return Result.success(token);
     }

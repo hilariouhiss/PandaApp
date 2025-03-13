@@ -3,10 +3,15 @@ package me.lhy.pandaid.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import me.lhy.pandaid.Insert;
+import me.lhy.pandaid.Update;
 import me.lhy.pandaid.domain.dto.PageDTO;
 import me.lhy.pandaid.domain.dto.PandaDTO;
 import me.lhy.pandaid.service.PandaService;
 import me.lhy.pandaid.util.Result;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +30,9 @@ public class PandaController {
 
     @Operation(summary = "获取所有大熊猫")
     @PostMapping("/getAll")
-    public Result<List<PandaDTO>> getAll(@RequestBody PageDTO page) {
+    public Result<List<PandaDTO>> getAll(
+            @Validated @RequestBody PageDTO page
+    ) {
         var Pandas = service.getAllWithPage(page.getNum(), page.getSize());
         return Result.success(Pandas);
     }
@@ -74,21 +81,24 @@ public class PandaController {
 
     @Operation(summary = "添加一个大熊猫")
     @PostMapping("/addOne")
-    public Result<Void> addOne(@RequestBody PandaDTO pandaDto) {
+    public Result<Void> addOne(
+            @Validated(Insert.class) @RequestBody PandaDTO pandaDto) {
         service.addOne(pandaDto);
         return Result.success();
     }
 
     @Operation(summary = "添加多个大熊猫")
     @PostMapping("/addMany")
-    public Result<Void> addMany(@RequestBody List<PandaDTO> pandaDTOS) {
+    public Result<Void> addMany(
+            @Valid @Validated(Insert.class) @RequestBody List<PandaDTO> pandaDTOS) {
         service.addMany(pandaDTOS);
         return Result.success();
     }
 
     @Operation(summary = "更新一个大熊猫")
     @PutMapping("/updateOne")
-    public Result<Void> updateOne(@RequestBody PandaDTO pandaDto) {
+    public Result<Void> updateOne(
+            @Validated(Update.class) @RequestBody PandaDTO pandaDto) {
         service.updateOne(pandaDto);
         return Result.success();
     }
@@ -109,7 +119,8 @@ public class PandaController {
 
     @Operation(summary = "根据ID删除多个大熊猫")
     @DeleteMapping("/deleteMany")
-    public Result<Void> deleteMany(@RequestBody List<Integer> ids) {
+    public Result<Void> deleteMany(
+            @NotEmpty(message = "列表不能为空") @RequestBody List<Integer> ids) {
         service.deleteMany(ids);
         return Result.success();
     }
