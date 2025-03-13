@@ -32,5 +32,5 @@ public class RolePermission {
 
     @Schema(description="是否删除")
     @TableLogic
-    private Boolean isDeleted;
+    private Boolean deleted;
 }

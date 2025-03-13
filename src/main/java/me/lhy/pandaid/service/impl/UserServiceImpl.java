@@ -15,8 +15,8 @@ import me.lhy.pandaid.mapper.UserRoleMapper;
 import me.lhy.pandaid.service.UserService;
 import me.lhy.pandaid.util.Constants;
 import me.lhy.pandaid.util.Converter;
-import me.lhy.pandaid.util.UsernameGenerator;
 import me.lhy.pandaid.util.JwtUtil;
+import me.lhy.pandaid.util.UsernameGenerator;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,14 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @CacheConfig(cacheNames = "userSystem")
-@Service("userService")
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
     private final RoleMapper roleMapper;
     private final UserRoleMapper userRoleMapper;
 
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
 
@@ -88,6 +88,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @LogOperation("用户登录")
     @Override
     public String login(String username, String password) {
         try {
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
             // 生成 JWT token
             return JwtUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
-           throw new RuntimeException("登录失败");
+            throw new RuntimeException("登录失败");
         }
     }
 
@@ -111,8 +112,8 @@ public class UserServiceImpl implements UserService {
      */
     @LogOperation(value = "用户注册操作", maskFields = {"password", "phoneNumber"})
     @Transactional(rollbackFor = Exception.class)
-    @Override
     @CacheEvict(value = {"user", "userCount"}, allEntries = true)
+    @Override
     public void register(RegisterDTO dto) {
         if (dto.getNickname() == null ||
                 dto.getPassword() == null ||
@@ -148,10 +149,10 @@ public class UserServiceImpl implements UserService {
      * @param pageSize 页大小
      * @return 指定页的用户
      */
-    @LogOperation(value = "获取所有用户信息")
-    @Override
+    @LogOperation("分页获取所有用户")
     @Cacheable(value = "users", key = "T(java.util.Objects).hash(#pageNum,#pageSize)",
             condition = "#pageNum < 5")
+    @Override
     public List<UserDTO> getAllWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
         List<User> users = userMapper.selectPage(page, null).getRecords();
@@ -164,9 +165,9 @@ public class UserServiceImpl implements UserService {
      * @param id 用户id
      * @return 用户信息
      */
-    @LogOperation(value = "获取所有用户信息")
-    @Override
+    @LogOperation("根据ID获取用户")
     @Cacheable(value = "user", key = "#id")
+    @Override
     public UserDTO getOneById(Long id) {
         if (id == null) throw new IllegalArgumentException("id不能为空");
         UserDTO dto = Converter.INSTANCE.toUserDto(userMapper.selectById(id));
@@ -180,9 +181,9 @@ public class UserServiceImpl implements UserService {
      * @param username 用户名
      * @return 用户信息
      */
-    @LogOperation(value = "获取所有用户信息")
-    @Override
+    @LogOperation("根据username获取用户")
     @Cacheable(value = "user", key = "#username")
+    @Override
     public UserDTO getOneByUsername(String username) {
         if (username == null) throw new IllegalArgumentException("username不能为空");
         UserDTO dto = Converter.INSTANCE.toUserDto(userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username)));
@@ -195,9 +196,9 @@ public class UserServiceImpl implements UserService {
      *
      * @return 用户总数
      */
-    @LogOperation(value = "获取用户总数")
-    @Override
+    @LogOperation("获取用户总数")
     @Cacheable(value = "userCount")
+    @Override
     public Long getCount() {
         return userMapper.selectCount(null);
     }
@@ -207,9 +208,9 @@ public class UserServiceImpl implements UserService {
      *
      * @return 已删除的用户
      */
-    @LogOperation(value = "获取已删除的用户")
-    @Override
+    @LogOperation("获取已删除的用户")
     @Cacheable(value = "deletedUsers", key = "#pageNum + '-' + #pageSize")
+    @Override
     public List<UserDTO> getDeletedWithPage(int pageNum, int pageSize) {
         Page<User> page = new Page<>(pageNum, pageSize);
         List<User> users = userMapper.selectPage(page, new LambdaQueryWrapper<User>().eq(User::getDeleted, true)).getRecords();
@@ -221,10 +222,12 @@ public class UserServiceImpl implements UserService {
      *
      * @param userDTOS 多个用户信息
      */
-    @LogOperation(value = "批量添加用户")
-    @Transactional
-    @Override
+    @LogOperation("批量添加用户")
+    @Transactional(
+            rollbackFor = {Exception.class}
+    )
     @CacheEvict(value = {"users", "userCount", "deletedUsers"}, allEntries = true)
+    @Override
     public void addMany(List<UserDTO> userDTOS) {
         List<User> users = userDTOS.stream().map(Converter.INSTANCE::toUser).toList();
         userMapper.insert(users);
@@ -235,10 +238,12 @@ public class UserServiceImpl implements UserService {
      *
      * @param dto 新用户信息
      */
-    @LogOperation(value = "更新单个用户")
-    @Transactional
-    @Override
+    @LogOperation("更新单个用户")
+    @Transactional(
+            rollbackFor = {Exception.class}
+    )
     @CacheEvict(value = {"user", "users"}, allEntries = true)
+    @Override
     public void updateOneByUsername(UserDTO dto) {
 
         if (!dto.getUsername().isBlank()) {
@@ -259,7 +264,10 @@ public class UserServiceImpl implements UserService {
         userMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
     }
 
-    @Transactional
+    @LogOperation("根据用户名删除用户")
+    @Transactional(
+            rollbackFor = {Exception.class}
+    )
     @CacheEvict(value = {"user", "users", "userCount"}, allEntries = true)
     @Override
     public void deleteOneByUsername(String username) {

@@ -12,7 +12,7 @@ public interface PandaService {
 
     // 根据ID查询单个大熊猫
     PandaDTO getOneById(Long id);
-    
+
     // 根据编号查询
     PandaDTO getOneByPandaId(Integer panda_id);
 
@@ -51,4 +51,7 @@ public interface PandaService {
 
     // 通过ID删除多个大熊猫
     void deleteMany(List<Integer> ids);
+
+    // 物理删除已逻辑删除的大熊猫
+    void physicalDelete();
 }

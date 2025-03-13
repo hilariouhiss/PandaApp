@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service("roleService")
+@Service
 public class RoleServiceImpl implements RoleService {
     private final RoleMapper roleMapper;
 

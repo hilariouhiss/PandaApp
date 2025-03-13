@@ -32,5 +32,5 @@ public class Record {
 
     @Schema(description="是否删除")
     @TableLogic
-    private Boolean isDeleted;
+    private Boolean Deleted;
 }
